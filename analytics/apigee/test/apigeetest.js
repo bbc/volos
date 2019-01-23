@@ -24,7 +24,19 @@
 'use strict';
 
 var Spi = require('..');
-var config = require('../../../testconfig/testconfig-apigee').config;
+
+var config = {
+  organization: 'ORG',
+  user: 'USER',
+  password: 'PASS',
+  uri: 'https://api.fakeapigee.com',
+  key: 'KEY',
+
+  validGrantTypes: ['client_credentials', 'authorization_code', 'implicit_grant', 'password'],
+  tokenLifetime: 4000, // expiration tests will wait this long
+  passwordCheck: () => { }
+}
+
 var commonTest = require('../../test/analyticstest');
 var assert = require('assert');
 var random = Math.random();

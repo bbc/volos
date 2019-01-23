@@ -21,6 +21,6 @@
     "url": "https://github.com/apigee/volos.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "npx mocha"
   }
 }
