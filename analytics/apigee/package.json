@@ -1,5 +1,5 @@
 {
-  "name": "volos-analytics-apigee",
+  "name": "@bbc/volos-analytics-apigee",
   "version": "0.4.2",
   "main": "lib/apigeeanalytics.js",
   "license": "MIT",
@@ -19,5 +19,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/apigee/volos.git"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }

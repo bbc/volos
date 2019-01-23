@@ -30,6 +30,7 @@ var assert = require('assert');
 var random = Math.random();
 var _ = require('underscore');
 var should = require('should');
+var nock = require('nock');
 
 describe('Apigee', function() {
 
@@ -61,7 +62,7 @@ describe('Apigee', function() {
     analytics = Spi.create(options);
     done();
   });
-  
+
   it('should have an URI', function(done) {
     var options = {
       key: "key",
@@ -103,18 +104,43 @@ describe('Apigee', function() {
     });
     done();
   });
-  
-  it('flush', function(done) {  
-    var recordsQueue = [record, record, record];
-    analytics.spi.flush(recordsQueue, function(err, retryRecords) {
-      should.not.exist(err);
-      if (retryRecords) {
-        assert(retryRecords.length <= recordsQueue.length);
-      }
-      done();
-    });
-  });
 
+  describe('flush', () => {
+
+    let scope;
+    let postBody;
+
+    beforeEach(() => {
+      scope = nock('https://api.fakeapigee.com')
+        .post('/v2/analytics/accept', function(body) {
+          postBody = body;
+          return true;
+        })
+        .reply(200, {});
+      });
+      
+      it('should callback without an error', function(done) {  
+        var recordsQueue = [record, record, record];
+        analytics.spi.flush(recordsQueue, function(err, retryRecords) {
+          should.not.exist(err);
+          if (retryRecords) {
+            assert(retryRecords.length <= recordsQueue.length);
+          }
+          done();
+        });
+      });
+
+      it('should send expected payload to analytics endpoint', function(done) {  
+        var recordsQueue = [record, record, record];
+        analytics.spi.flush(recordsQueue, function(err, retryRecords) {
+          postBody.should.eql({
+            records: recordsQueue
+          });
+          done();
+        });
+      });
+  });
+  
   it('should compress before sending if so configured', function(done) {
     var options = extend(config, {
       recordLimit: 10000,
